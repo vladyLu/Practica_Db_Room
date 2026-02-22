@@ -8,4 +8,5 @@ data class CursosUseCases @Inject constructor(
     val insertarCurso: InsertarCursoUseCase,
     val eliminarCurso: EliminarCursoUseCase,
     val actualizarCurso: ActualizarCursoUseCase,
+    val obtenerCursosConCantidadParalelos: ObtenerCursosConCantidadParalelos
 )

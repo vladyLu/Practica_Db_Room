@@ -10,8 +10,10 @@ import com.example.practica_db_room.domain.usecase.curso.CursosUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,15 +21,17 @@ import javax.inject.Inject
 class CursoViewModel @Inject constructor(
     private val useCases: CursosUseCases
 ) : ViewModel(){
-    private val _cursos= MutableStateFlow<List<Curso>>(emptyList())
-    val cursos: StateFlow<List<Curso>> = _cursos.asStateFlow()
+    val cursos = useCases.obtenerCursosConCantidadParalelos()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private val _cursoSeleccionado = MutableStateFlow<Curso?>(null)
     val cursoSeleccionado = _cursoSeleccionado.asStateFlow()
-    init {
-        viewModelScope. launch {
-            useCases.listarCursos().collect { _cursos.value=it }
-        }
+    fun seleccionarCurso(curso: Curso) {
+        _cursoSeleccionado.value = curso
     }
     fun agregarCurso(nombre: String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,9 +49,5 @@ class CursoViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             useCases.actualizarCurso(curso)
         }
-    }
-
-    fun seleccionarCurso(curso: Curso) {
-        _cursoSeleccionado.value = curso
     }
 }

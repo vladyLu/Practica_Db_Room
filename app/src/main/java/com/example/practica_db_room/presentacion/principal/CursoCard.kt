@@ -7,10 +7,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
@@ -30,6 +33,7 @@ import com.example.practica_db_room.domain.model.Curso
 fun CursoCard(
     curso: Curso,
     onClick:()-> Unit,
+    tieneParalelos: Boolean,
     isSelect: Boolean,
     onLongClick:()-> Unit
 ){
@@ -54,8 +58,8 @@ fun CursoCard(
     )
 
     Card(modifier = Modifier
-        .width(100.dp)
-        .height(60.dp)
+        .width(140.dp)
+        //.wrapContentHeight()
         .combinedClickable(
             onClick = onClick,
             onLongClick = onLongClick
@@ -65,17 +69,26 @@ fun CursoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
         colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ){
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+
             Text(
                 text = curso.nombre,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = contentColor
+                fontWeight = FontWeight.Bold
             )
+
+            if (!tieneParalelos) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Agregar paralelo",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

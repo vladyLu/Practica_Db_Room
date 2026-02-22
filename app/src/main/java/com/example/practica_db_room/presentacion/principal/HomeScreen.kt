@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -101,29 +102,45 @@ fun HomeScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            //.padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(
-                items = cursos,
-                key = { it.id ?: it.hashCode() }
-            ) { curso ->
-                CursoCard(
-                    curso = curso,
-                    isSelect = cursoSeleccionado?.id == curso.id,
-                    onClick = {
-                        viewModel.seleccionarCurso(curso)
-                        paraleloVieModel.cargarParalelos(curso.id)
-
-                    },
-                    onLongClick = {
-                        viewModel.seleccionarCurso(curso)
-                        sheetActual = SheetType.OPCIONES
-                    }
+        if (cursos.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Aún no tienes cursos.\nAgrega un curso para comenzar 📚",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
                 )
+            }
+        }else{
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                //.padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(
+                    items = cursos,
+                    key = { it.curso.id?: it.hashCode() }
+                ) { cursoConInfo ->
+                    CursoCard(
+                        curso = cursoConInfo.curso,
+                        isSelect = cursoSeleccionado?.id == cursoConInfo.curso.id,
+                        tieneParalelos = cursoConInfo.cantidadParalelos>0,
+                        onClick = {
+                            viewModel.seleccionarCurso(cursoConInfo.curso)
+                            paraleloVieModel.cargarParalelos(cursoConInfo.curso.id)
+
+                        },
+                        onLongClick = {
+                            viewModel.seleccionarCurso(cursoConInfo.curso)
+                            sheetActual = SheetType.OPCIONES
+                        }
+                    )
+                }
             }
         }
 
